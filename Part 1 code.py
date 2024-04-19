@@ -1,18 +1,24 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[4]:
 
-
-import heapq
 
 class Post:
     """
     Class to represent a social media post.
     """
+
     def __init__(self, post_id, datetime, content, author, views):
         """
         Initializes a Post object with provided attributes.
+
+        Args:
+            post_id (int): Unique identifier for the post.
+            datetime (str): Date and time when the post was created.
+            content (str): Text content of the post.
+            author (str): Author of the post.
+            views (int): Number of views the post has received.
         """
         # Initializing attributes of the post
         self.post_id = post_id  # Unique identifier for the post
@@ -25,9 +31,13 @@ class HashTable:
     """
     Hash table implementation for storing posts by datetime.
     """
+
     def __init__(self, size=10):
         """
         Initializes a HashTable object with a given size.
+
+        Args:
+            size (int): Size of the hash table.
         """
         # Initializing the size of the hash table and creating an empty table
         self.size = size
@@ -36,6 +46,12 @@ class HashTable:
     def _hash(self, key):
         """
         Hash function to convert a datetime string into an index.
+
+        Args:
+            key (str): Datetime string.
+
+        Returns:
+            int: Index for the given key.
         """
         # Calculating the hash value based on the sum of ASCII values of characters in the key
         hash_value = sum(ord(char) for char in key) % self.size
@@ -44,10 +60,16 @@ class HashTable:
     def insert(self, key, value, verbose=False):
         """
         Inserts a key-value pair into the hash table.
+
+        Args:
+            key (str): Key for the entry.
+            value: Value associated with the key.
+            verbose (bool): Whether to print verbose output. Default is False.
         """
         # Getting the index where the key-value pair will be inserted
         index = self._hash(key)
         node = self.table[index]
+
         # Handling collision by chaining
         if node is None:
             # If there is no collision, insert the key-value pair directly
@@ -65,10 +87,18 @@ class HashTable:
     def search(self, key, verbose=False):
         """
         Searches for a value associated with a given key in the hash table.
+
+        Args:
+            key (str): Key to search for.
+            verbose (bool): Whether to print verbose output. Default is False.
+
+        Returns:
+            The value associated with the key, if found. Otherwise, returns None.
         """
         # Getting the index where the key may be located
         index = self._hash(key)
         node = self.table[index]
+
         # Searching for the key in the chain at the calculated index
         while node is not None:
             if node[0] == key:
@@ -78,14 +108,23 @@ class HashTable:
             node = node[1]
         return None
 
+
 class BST:
     """
     Binary search tree implementation to store posts sorted by datetime.
     """
+
     class Node:
+        """
+        Represents a node in the binary search tree.
+        """
+
         def __init__(self, post):
             """
             Initializes a Node object with a post.
+
+            Args:
+                post (Post): The post to be stored in the node.
             """
             self.post = post
             self.left = None
@@ -101,6 +140,9 @@ class BST:
     def insert(self, post):
         """
         Inserts a post into the binary search tree.
+
+        Args:
+            post (Post): The post to be inserted.
         """
         if not self.root:
             # If the tree is empty, set the post as the root
@@ -112,6 +154,10 @@ class BST:
     def _insert_recursive(self, current_node, post):
         """
         Recursively inserts a post into the binary search tree.
+
+        Args:
+            current_node (Node): The current node being processed.
+            post (Post): The post to be inserted.
         """
         if post.datetime < current_node.post.datetime:
             # If the post's datetime is less than current node's datetime, insert to the left
@@ -129,6 +175,13 @@ class BST:
     def find_posts_in_range(self, start_datetime, end_datetime):
         """
         Finds posts within a given datetime range.
+
+        Args:
+            start_datetime (str): The starting datetime of the range.
+            end_datetime (str): The ending datetime of the range.
+
+        Returns:
+            list: List of posts within the given datetime range.
         """
         posts = []
         self._find_posts_in_range_recursive(self.root, start_datetime, end_datetime, posts)
@@ -137,6 +190,12 @@ class BST:
     def _find_posts_in_range_recursive(self, current_node, start_datetime, end_datetime, posts):
         """
         Recursively finds posts within a given datetime range.
+
+        Args:
+            current_node (Node): The current node being processed.
+            start_datetime (str): The starting datetime of the range.
+            end_datetime (str): The ending datetime of the range.
+            posts (list): List to store the found posts.
         """
         if current_node is None:
             return
@@ -153,10 +212,13 @@ class BST:
             # Recursively search in the right subtree if necessary
             self._find_posts_in_range_recursive(current_node.right, start_datetime, end_datetime, posts)
 
+import heapq  # Importing heapq for priority queue operations
+
 class MaxHeap:
     """
     Max heap implementation to store posts sorted by views.
     """
+
     def __init__(self):
         """
         Initializes a MaxHeap object.
@@ -167,6 +229,9 @@ class MaxHeap:
     def insert(self, post):
         """
         Inserts a post into the max heap.
+
+        Args:
+            post (Post): The post to be inserted.
         """
         # Inserting the post into the heap based on its views
         heapq.heappush(self.heap, (-post.views, post))
@@ -174,6 +239,9 @@ class MaxHeap:
     def extract_max(self):
         """
         Extracts the post with the maximum views from the max heap.
+
+        Returns:
+            Post: The post with the maximum views.
         """
         if not self.heap:
             raise IndexError("Cannot extract from an empty heap")
@@ -182,12 +250,13 @@ class MaxHeap:
     def peek_max(self):
         """
         Returns the post with the maximum views without removing it from the heap.
+
+        Returns:
+            Post or None: The post with the maximum views, or None if the heap is empty.
         """
         if not self.heap:
             return None
         return self.heap[0][1]
-
-
 
     def display_sorted(self):
         """
@@ -196,7 +265,9 @@ class MaxHeap:
         # Sorting the heap based on views and displaying the posts
         sorted_heap = sorted(self.heap, key=lambda x: x[1].views, reverse=True)
         for _, post in sorted_heap:
+            # Printing post details
             print(f"Post: {post.content} by {post.author}, Views: {post.views}")
+
 
 class SocialMediaManager:
     """
@@ -281,7 +352,7 @@ if __name__ == "__main__":
 
     # Get the most viewed post
     most_viewed_post = social_media_manager.get_most_viewed_post()
-
+    print()
     # Get a post by datetime (output - Post not found)
     post_by_datetime = social_media_manager.get_post_by_datetime("2024-04-16 11:00:00")
 
