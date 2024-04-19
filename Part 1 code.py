@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[4]:
+# In[2]:
 
 
 class Post:
@@ -73,14 +73,12 @@ class HashTable:
         # Handling collision by chaining
         if node is None:
             # If there is no collision, insert the key-value pair directly
-            self.table[index] = (key, value)
+            self.table[index] = [(key, value)]
             if verbose:
                 print(f'{key} inserted without collision at {index}')
         else:
-            # If there is collision, traverse the chain and insert at the end
-            while node[1] is not None:
-                node = node[1]
-            node[1] = (key, value)
+            # If there is a collision, append to the existing chain
+            self.table[index].append((key, value))
             if verbose:
                 print(f'{key} successfully inserted on chain at {index}')
 
@@ -97,16 +95,17 @@ class HashTable:
         """
         # Getting the index where the key may be located
         index = self._hash(key)
-        node = self.table[index]
+        nodes = self.table[index]
 
         # Searching for the key in the chain at the calculated index
-        while node is not None:
-            if node[0] == key:
-                return node[1]
-            if verbose:
-                print(f'At hash value {index}, "{node[0]}" not equal to target.')
-            node = node[1]
+        if nodes is not None:
+            for node in nodes:
+                if node[0] == key:
+                    return node[1]
+                if verbose:
+                    print(f'At hash value {index}, "{node[0]}" not equal to target.')
         return None
+
 
 
 class BST:
@@ -343,26 +342,55 @@ if __name__ == "__main__":
     # Add some posts
     social_media_manager.add_post(1, "2024-04-13 01:00:00", "Check out this Sunset photo!", "Asma", 100)
     social_media_manager.add_post(2, "2024-04-14 11:00:00", "New Youtube Video", "Brook", 15000)
-    social_media_manager.add_post(3, "2024-04-14 12:30:00", "New song released", "Taylor", 22000)
-    social_media_manager.add_post(4, "2024-04-15 13:00:00", "Photo dump from my Paris Trip", "Alice", 1200)
+    social_media_manager.add_post(3, "2024-04-14 11:00:00", "New song released", "Taylor", 22000)
+    social_media_manager.add_post(4, "2024-04-15 13:00:00", "Photo dump from my Paris Trip", "Fakhra", 1200)
+    social_media_manager.add_post(5,"2024-04-15 02:00:00", "Morning Coffee", "Khalfan", 1000)
 
-    # Display the heap with sorted order of most views
-    print("Heap with sorted order of most views:")
-    social_media_manager.posts_heap.display_sorted()
+    
+    #Hash test cases  
+    print('1- Test retrieving a post by datetime (output - Post found by datetime)')
+    post_by_datetime = social_media_manager.get_post_by_datetime("2024-04-13 01:00:00")
 
-    # Get the most viewed post
-    most_viewed_post = social_media_manager.get_most_viewed_post()
-    print()
-    # Get a post by datetime (output - Post not found)
+    print('2- Test retrieving a non-existent post by datetime (output - Post not found)')
     post_by_datetime = social_media_manager.get_post_by_datetime("2024-04-16 11:00:00")
-
-    # Get a post by datetime
+    
+    print('3- Test retrieving a post by datetime from a collison (output - Post found by datetime)')
     post_by_datetime = social_media_manager.get_post_by_datetime("2024-04-14 11:00:00")
 
-    # Find posts in a range
-    start_datetime = "2024-04-14 12:00:00"
-    end_datetime = "2024-04-16 12:00:00"
+    
+    #BST test cases
+    
+    print('1-Test finding posts in a range (output - Posts found in range)')
+    start_datetime = "2024-04-14 00:00:00"
+    end_datetime = "2024-04-15 23:59:59"
     posts_in_range = social_media_manager.find_posts_in_range(start_datetime, end_datetime)
+
+    print("2-Test finding posts in a range where no posts exist (output - No posts found in range)")
+    start_datetime = "2024-04-16 00:00:00"
+    end_datetime = "2024-04-17 00:00:00"
+    posts_in_range = social_media_manager.find_posts_in_range(start_datetime, end_datetime)
+    
+    print("3-Test finding posts in a very small range")
+    start_datetime = "2024-04-14 11:00:00"
+    end_datetime = "2024-04-14 11:00:00"
+    posts_in_range = social_media_manager.find_posts_in_range(start_datetime, end_datetime)
+    
+    #Maxheap test cases
+    
+    print("1- Test Display the Heap with sorted order of most views:")
+    social_media_manager.posts_heap.display_sorted()
+    
+    print("2-Test extracting the post with the maximum views")
+    pop_post=social_media_manager.posts_heap.extract_max()
+    print(f"Post: {pop_post.content} by {pop_post.author}, Views: {pop_post.views}")
+    
+    print("3- Test Display the post with the most views:")
+    social_media_manager.get_most_viewed_post()
+    
+    
+
+    
+   
 
 
 # In[ ]:
